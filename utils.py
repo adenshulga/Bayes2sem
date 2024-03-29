@@ -33,6 +33,9 @@ class TimeSeries:
     def __repr__(self) -> str:
         return str(self)
     
+    def __len__(self) -> int:
+        return self.len
+    
     def plot(self, borders : list[int] = None) -> None:
 
         if borders:

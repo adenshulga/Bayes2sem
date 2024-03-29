@@ -44,6 +44,7 @@ class SyntheticChangepointData:
 
         # Keep sampling changepoints and growing the list
         while True:
+            # print(self.timespan)
             if segments[-1] < self.timespan:
                 # Generate the next changepoint
                 next_changepoint = self.changepoint_prior.rvs() + segments[-1]
@@ -62,25 +63,27 @@ class SyntheticChangepointData:
         return segments
 
     def generate_parameters(self, num_segments: int):
-        # Sample parameters using params_prior for the given number of segments
-        param_sets = [dist.rvs(size=num_segments) for dist in self.params_prior]
-        return list(zip(*param_sets))  # Transpose the list to get a list of parameter sets
-
+        params_list = [[dist.rvs() for dist in self.params_prior] for _ in range(num_segments)]
+        return params_list
+    
     def generate_data(self, dataset_num: str = 'Synthetic', ts_num: int = None):
         # Generate the time series based on the generated segments and parameters
         segments = self.generate_segments()
-        true_cps = [segment[-1] for segment in segments]
-        time_series_data = np.array([])
+        print('Generated segments :', segments)
+        true_cps = segments[1:-1]
+        time_series_data = np.empty((0,1))
 
         # Generate parameters for each segment
-        segment_parameters = self.generate_parameters(len(segments) - 1)
+        segment_parameters = self.generate_parameters(len(segments))
 
         for i, (start, end) in enumerate(zip(segments[:-1], segments[1:])):
             segment_length = end - start
             params = segment_parameters[i]
             # Generate the data for the current segment using the sampled parameters
             segment_data = self.ts_gen_distribution(*params, size=segment_length)
+            
             time_series_data = np.concatenate((time_series_data, segment_data))
+            print(time_series_data.shape)
 
         return SyntheticTimeSeries(time_series_data, dataset_num, ts_num, true_cps=true_cps)
 
