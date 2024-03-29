@@ -51,17 +51,15 @@ class TimeSeries:
             ranges = [0] + changepoints + [self.len]
             p_matrix = np.zeros((len(ranges) - 1, len(ranges) - 1))
 
-            plt.figure(figsize=(10, 5))  # Optional: Adjust figure size
+            plt.figure(figsize=(10, 5)) 
 
             for i in range(len(ranges) - 1):
                 segment = self.ts[ranges[i]:ranges[i+1]]
                 segment_color = color_map(i / (len(ranges) - 2))
 
-                # Calculate the mean and variance for the current segment
                 mean = np.mean(segment)
                 variance = np.var(segment)
 
-                # Plot histogram for the segment
                 plt.hist(segment,
                          bins=bins,
                          color=segment_color,
@@ -69,7 +67,6 @@ class TimeSeries:
                          label=f'Segment {i} - Mean: {mean:.2f}, Var: {variance:.2f}',
                          density=True)
                 
-                # Compare this segment to all other segments
                 for j in range(i + 1, len(ranges) - 1):
                     other_segment = self.ts[ranges[j]:ranges[j+1]]
                     ks_statistic, p_value = ks_2samp(segment, other_segment)
@@ -91,10 +88,8 @@ class TimeSeries:
                      label=f'Mean: {mean:.2f}, Var: {variance:.2f}',
                      density=True)
 
-        # Show the legend with mean and variance
         plt.legend(loc='upper right')
 
-        # Show the plot
         plt.show()
 
 

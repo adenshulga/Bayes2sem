@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.stats import expon, norm, rv_continuous
+from scipy.stats import rv_continuous
 from typing import Callable
 from utils import TimeSeries
 
@@ -86,28 +86,7 @@ class SyntheticChangepointData:
 
 
 
-# Example usage
-lambda_param = 0.05  # Lambda parameter for exponential distribution
-mean_var_pairs = [(0, 1), (5, 1.5), (10, 2)]
-num_segments = 3
-segment_length = 100
 
-# We create distribution objects for each segment and the changepoints.
-changepoint_dist = expon(scale=1/lambda_param)
-segment_dists = [norm(loc=mean, scale=np.sqrt(var)) for mean, var in mean_var_pairs]
-
-generator = SyntheticChangepointData(segment_dists, changepoint_dist)
-time_series = generator.generate_data(num_segments=num_segments, segment_length=segment_length)
-print(time_series)
-
-# Visualize the changepoints
-import matplotlib.pyplot as plt
-
-changepoints = generator.generate_changepoints(num_segments=num_segments)
-for cp in changepoints:
-    plt.axvline(x=cp, color='r', linestyle='--')
-plt.plot(time_series)
-plt.show()
 
 
 
