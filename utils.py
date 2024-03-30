@@ -150,6 +150,9 @@ class Dataset:
         else:
             raise StopIteration
         
+    def __len__(self) -> int:
+        return len(self.ts_list)
+        
     def sample_plots(self, 
                      ind : int = 0,
                      borders: list[int] = None,
