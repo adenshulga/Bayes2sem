@@ -39,26 +39,22 @@ class SyntheticChangepointData:
         self.ts_gen_distribution = ts_gen_distribution
 
     def generate_segments(self):
-        # Initialize the list of segment boundaries starting with 0
+        
         segments = [0]
 
-        # Keep sampling changepoints and growing the list
         while True:
             # print(self.timespan)
             if segments[-1] < self.timespan:
-                # Generate the next changepoint
                 next_changepoint = self.changepoint_prior.rvs() + segments[-1]
                 
                 if next_changepoint < self.timespan:
                     segments.append(next_changepoint)
                 else:
-                    # If the next changepoint is beyond the timespan, end the generation process
                     segments.append(self.timespan)
                     break
             else:
                 break
 
-        # Making sure the segments are integers
         segments = [int(cp) for cp in segments]
         return segments
 
@@ -67,23 +63,21 @@ class SyntheticChangepointData:
         return params_list
     
     def generate_data(self, dataset_num: str = 'Synthetic', ts_num: int = None):
-        # Generate the time series based on the generated segments and parameters
+        
         segments = self.generate_segments()
         print('Generated segments :', segments)
         true_cps = segments[1:-1]
         time_series_data = np.empty((0,1))
 
-        # Generate parameters for each segment
         segment_parameters = self.generate_parameters(len(segments))
 
         for i, (start, end) in enumerate(zip(segments[:-1], segments[1:])):
             segment_length = end - start
             params = segment_parameters[i]
-            # Generate the data for the current segment using the sampled parameters
             segment_data = self.ts_gen_distribution(*params, size=segment_length)
             
             time_series_data = np.concatenate((time_series_data, segment_data))
-            print(time_series_data.shape)
+            # print(time_series_data.shape)
 
         return SyntheticTimeSeries(time_series_data, dataset_num, ts_num, true_cps=true_cps)
 
